@@ -14,8 +14,11 @@ slide {
 }
 
 slide-grid {
+  --intro: calc(var(--unit) * 80);
+  --gap: calc(var(--unit) * 12);
   container-type: size;
   display: flex;
+  gap: var(--gap);
   align-items: center;
   justify-content: center;
   align-self: stretch;
@@ -24,9 +27,34 @@ slide-grid {
   box-sizing: border-box;
 }
 
+slide-intro {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: calc(var(--unit) * 4);
+  width: var(--intro);
+}
+
 slide-grid stack {
-  width: min(100cqw, 100cqh * 6 / 7);
+  width: min(100cqw - var(--intro) - var(--gap), 100cqh * 6 / 7);
   aspect-ratio: 6 / 7;
+}
+
+@media (width <= 768px) {
+  slide-grid {
+    container-type: inline-size;
+    flex-direction: column;
+    align-items: stretch;
+    padding-block: calc(var(--unit) * 16);
+  }
+
+  slide-intro {
+    width: auto;
+  }
+
+  slide-grid stack {
+    width: 100%;
+  }
 }
 
 slide-grid img {
@@ -85,7 +113,7 @@ slide-text {
   line-height: 1.65;
 }
 
-slide h2 {
+slide :is(h1, h2) {
   color: var(--primary-text);
 }
 
