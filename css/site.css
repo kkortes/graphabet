@@ -85,6 +85,10 @@ slide-text {
   line-height: 1.65;
 }
 
+slide-text h2 {
+  color: var(--primary-text);
+}
+
 slide-wide {
   width: min(1100px, 100%);
 }
