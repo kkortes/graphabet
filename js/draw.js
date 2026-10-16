@@ -35,8 +35,6 @@ const bounds = g => {
 const cell = Object.values(Object.groupBy(glyphs.map(bounds), b => JSON.stringify(b, (k, v) => typeof v === 'number' ? +v.toFixed(6) : v))).sort((a, b) => b.length - a.length)[0][0];
 // Inline, so the rulers can run past the sheet to the slide's edges in the letters' own coordinates
 const rule = (x1, y1, x2, y2) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#888" stroke-opacity="0.3" vector-effect="non-scaling-stroke"/>`;
-// The letter, its horizontal mirror, its vertical mirror and the pair's: Perfect symmetry and the background lattice
-export const flips = [[1, 1], [-1, 1], [1, -1], [-1, -1]];
 const sheet = mirrored => {
   const pitch = [7, 9];
   const at = i => [(i % columns) * pitch[0] + 1, Math.floor(i / columns) * pitch[1] + 1];
@@ -44,7 +42,7 @@ const sheet = mirrored => {
   const ys = Array.from({ length: rows }, (_, r) => at(r * columns)[1]).flatMap(oy => cell.y.map(y => y + oy));
   // Mirrored, the letter is stacked in its own cell: its copy flipped across the box's vertical centre (x → 4 − x)
   // goes on top, then the pair flipped across the horizontal centre (y → 6 − y)
-  const figure = (g, [ox, oy]) => mirrored ? flips
+  const figure = (g, [ox, oy]) => mirrored ? [[1, 1], [-1, 1], [1, -1], [-1, -1]]
     .map(([sx, sy]) => `<g transform="translate(${sx < 0 ? ox + 4 : ox} ${sy < 0 ? oy + 6 : oy}) scale(${sx} ${sy})">${draw(g)}</g>`).join('') : draw(g, {}, [ox, oy]);
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${columns * pitch[0]} ${rows * pitch[1]}" overflow="visible">${[
     ...xs.map(x => rule(x, -1000, x, 1000)),
