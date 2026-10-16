@@ -6,8 +6,7 @@
   font-display: swap;
 }
 
-slide h2,
-slide-intro p {
+slide h2 {
   font-family: Graphabet, var(--font-ui);
   font-weight: normal;
   letter-spacing: normal;
