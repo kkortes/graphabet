@@ -19,8 +19,8 @@
         Object.keys(g.c).map(capital).join(' '),
         Object.entries(g.c).map(([s, v]) => `${capital(s)} → ${v}`).join(' · '),
         g.fired.join(' · ') || 'No joint rule fired',
-        `Upright ×${count(g.pieces, 'upright')} · Flat ×${count(g.pieces, 'flat')} · Corner ×${count(g.pieces, 'corner')} · Diagonal ×${count(g.pieces, 'diagonal')} · Joint ×${g.joints.length}`,
-        `${g.pieces.length} rectangles · ${g.pieces.length * 2} triangles · ${g.joints.length} circles · none overlapping`
+        `Upright ×${count(g.pieces, 'upright')} · Flat ×${count(g.pieces, 'flat')} · Corner ×${count(g.pieces, 'corner')} · Diagonal ×${count(g.pieces, 'diagonal')} · Circle ×${g.circles.length}`,
+        `${g.pieces.length} rectangles · ${g.pieces.length * 2} triangles · ${g.circles.length} circles, ${g.circles.filter(c => c.loose).length} on loose ends`
       ]
     };
   };

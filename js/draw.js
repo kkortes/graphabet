@@ -1,12 +1,12 @@
 import { every, letters, segs } from '/js/letters.js';
 import { H, halves, shapes, clash } from '/js/pieces.js';
 
-export const colors = { upright: '#7fd18b', flat: '#6aa9ff', corner: '#ff9f5a', diagonal: '#e07bd0', joint: '#f2d36b' };
+export const colors = { upright: '#7fd18b', flat: '#6aa9ff', corner: '#ff9f5a', diagonal: '#e07bd0', circle: '#f2d36b' };
 
 const tri = (t, color, seams, [ox, oy]) => `<polygon points="${t.map(([x, y]) => `${(x + ox).toFixed(3)},${(y + oy).toFixed(3)}`).join(' ')}" fill="${color}" stroke="${seams ? '#111' : color}" stroke-width="${seams ? 0.012 : 0.004}" stroke-linejoin="round"/>`;
 const dot = ([x, y], color, [ox, oy]) => `<circle cx="${x + ox}" cy="${y + oy}" r="${H}" fill="${color}"/>`;
 
-export const draw = (glyph, { seams, paint } = {}, at = [0, 0]) => [...glyph.pieces, ...glyph.joints]
+export const draw = (glyph, { seams, paint } = {}, at = [0, 0]) => [...glyph.pieces, ...glyph.circles]
   .map(s => [s, paint || colors[s.k]])
   .map(([s, color]) => s.c ? halves(s.c).map(t => tri(t, color, seams, at)).join('') : dot(s.at, color, at))
   .join('');
@@ -16,4 +16,4 @@ export const svg = (box, body) => `data:image/svg+xml,${encodeURIComponent(`<svg
 
 export const glyphs = Object.entries(letters).map(([c, strokes]) => ({ c, ...shapes(segs(strokes)) }));
 export const alphabet = svg('0 0 91 18', glyphs.map((g, i) => draw(g, {}, [(i % 13) * 7 + 1, Math.floor(i / 13) * 9 + 1])).join(''));
-export const overlapping = glyphs.filter(g => clash([...g.pieces, ...g.joints])).map(g => g.c);
+export const overlapping = glyphs.filter(g => clash([...g.pieces, ...g.circles])).map(g => g.c);

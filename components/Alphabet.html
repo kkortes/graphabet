@@ -6,7 +6,7 @@
   const rects = glyphs.flatMap(g => g.pieces).length;
 
   component({
-    totals: `${rects} rectangles · ${rects * 2} triangles · ${glyphs.flatMap(g => g.joints).length} circles`,
+    totals: `${rects} rectangles · ${rects * 2} triangles · ${glyphs.flatMap(g => g.circles).length} circles`,
     check: overlapping.length ? `Overlap in ${overlapping.join(', ')}` : 'A–Z overlap-free',
     image: alphabet,
     legend: Object.entries(colors).map(([k, color]) => ({ name: capital(k), color }))

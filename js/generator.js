@@ -28,10 +28,15 @@ export const grammar = [
   '- Peak + top Bar → Peak alone',
   '- Vee + bottom Bar → Vee alone',
   '',
+  '## Circle rules',
+  '- Pieces meet → a circle covers the joint',
+  '- Loose end → a circle finishes it',
+  '- Every piece runs into the circles at its ends',
+  '',
   '## Rejection rules',
   '- Piece not on an A–Z location → redraw',
   '- Glyph falls apart → redraw',
-  '- Two pieces overlap, or a circle covers a piece that doesn\'t end at it → redraw'
+  '- Pieces that share no end overlap, or a circle covers a piece that doesn\'t end at it → redraw'
 ].join('\n');
 
 const rng = s => () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296;
@@ -76,7 +81,7 @@ export const generate = seed => {
       if (!g.segs.every(s => allowed.has(segKey(s)))) { tally.off++; continue; }
       if (!connected(g.segs)) { tally.apart++; continue; }
       const parts = shapes(g.segs);
-      if (clash([...parts.pieces, ...parts.joints])) { tally.overlap++; continue; }
+      if (clash([...parts.pieces, ...parts.circles])) { tally.overlap++; continue; }
       return { ...g, ...parts, match: known[sig(g.segs)] };
     }
   });
