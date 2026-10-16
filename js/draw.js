@@ -21,8 +21,7 @@ export const svg = (box, body) => `data:image/svg+xml,${encodeURIComponent(`<svg
 export const art = (box, body) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${box}">${body}</svg>`;
 
 export const glyphs = Object.entries(letters).map(([c, strokes]) => ({ c, ...shapes(segs(strokes)) }));
-// A–Z sits in two rows of 13. A sheet folds each letter: fold 1 is the letter itself, fold 2 adds its mirror beside it
-// and that pair's mirror below, so a letter becomes a figure 4 × fold units wide and 6 × fold tall, set three apart
+// A–Z sits in two rows of 13, each letter's 4 × 6 box set three units apart
 const [columns, rows] = [13, 2];
 // A letter's drawn bounds: its rectangles' corners and its circles' edges
 const bounds = g => {
@@ -31,19 +30,20 @@ const bounds = g => {
   return { x: [Math.min(...xs), Math.max(...xs)], y: [Math.min(...ys), Math.max(...ys)] };
 };
 // The rulers run the whole slide through both rows and every column, so they come from the box the letters are
-// drawn in, the drawn bounds most letters share, grown by the fold and stepped by the pitch. No single letter moves a
+// drawn in, the drawn bounds most letters share, stepped by the pitch. No single letter moves a
 // line: I sits inside its column's lines and Q's tail crosses its column's right one
 const cell = Object.values(Object.groupBy(glyphs.map(bounds), b => JSON.stringify(b, (k, v) => typeof v === 'number' ? +v.toFixed(6) : v))).sort((a, b) => b.length - a.length)[0][0];
 // Inline, so the rulers can run past the sheet to the slide's edges in the letters' own coordinates
 const rule = (x1, y1, x2, y2) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#888" stroke-opacity="0.3" vector-effect="non-scaling-stroke"/>`;
-const sheet = fold => {
-  const [w, h] = [4 * fold, 6 * fold], pitch = [w + 3, h + 3];
+const sheet = mirrored => {
+  const pitch = [7, 9];
   const at = i => [(i % columns) * pitch[0] + 1, Math.floor(i / columns) * pitch[1] + 1];
-  const xs = Array.from({ length: columns }, (_, c) => at(c)[0]).flatMap(ox => [cell.x[0] + ox, cell.x[1] + (w - 4) + ox]);
-  const ys = Array.from({ length: rows }, (_, r) => at(r * columns)[1]).flatMap(oy => [cell.y[0] + oy, cell.y[1] + (h - 6) + oy]);
-  // The mirrors share an edge with the letter: x → w − x beside it, y → h − y below
-  const figure = (g, [ox, oy]) => fold === 1 ? draw(g, {}, [ox, oy]) : [[1, 1], [-1, 1], [1, -1], [-1, -1]]
-    .map(([sx, sy]) => `<g transform="translate(${sx < 0 ? ox + w : ox} ${sy < 0 ? oy + h : oy}) scale(${sx} ${sy})">${draw(g)}</g>`).join('');
+  const xs = Array.from({ length: columns }, (_, c) => at(c)[0]).flatMap(ox => cell.x.map(x => x + ox));
+  const ys = Array.from({ length: rows }, (_, r) => at(r * columns)[1]).flatMap(oy => cell.y.map(y => y + oy));
+  // Mirrored, the letter is stacked in its own cell: its copy flipped across the box's vertical centre (x → 4 − x)
+  // goes on top, then the pair flipped across the horizontal centre (y → 6 − y)
+  const figure = (g, [ox, oy]) => mirrored ? [[1, 1], [-1, 1], [1, -1], [-1, -1]]
+    .map(([sx, sy]) => `<g transform="translate(${sx < 0 ? ox + 4 : ox} ${sy < 0 ? oy + 6 : oy}) scale(${sx} ${sy})">${draw(g)}</g>`).join('') : draw(g, {}, [ox, oy]);
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${columns * pitch[0]} ${rows * pitch[1]}" overflow="visible">${[
     ...xs.map(x => rule(x, -1000, x, 1000)),
     ...ys.map(y => rule(-1000, y, 1000, y)),
@@ -53,8 +53,8 @@ const sheet = fold => {
 // A word set in the letters, six units apart, the letters' four-unit box plus a gap of two
 export const word = (text, paint) => art(`-0.2 -0.2 ${(text.length - 1) * 6 + 4.4} 6.4`, [...text].map((c, i) => draw(glyphs.find(g => g.c === c), { paint }, [i * 6, 0])).join(''));
 
-export const alphabet = sheet(1);
-export const symmetry = sheet(2);
+export const alphabet = sheet(false);
+export const symmetry = sheet(true);
 
 // The building blocks at the scale the letters use: one unit-long flat piece, its first triangle and an end circle
 const unit = shapes([[[0, 0], [1, 0]]]);
