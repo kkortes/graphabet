@@ -2,7 +2,7 @@
 # requires-python = ">=3.9"
 # dependencies = ["fonttools[woff]>=4.60", "skia-pathops>=0.8"]
 # ///
-"""Builds font/Graphabet.ttf and font/Graphabet.woff2 from the A–Z the site draws: `uv run font/build.py`.
+"""Builds Graphabet from the A–Z the site draws, Regular as TTF and WOFF2, Bold as WOFF2: `uv run font/build.py`.
 
 The letters come straight from js/letters.js and js/pieces.js (read through bun), so the font never drifts
 from the page: each glyph is its rectangles and end circles merged into one clean outline per stroke run.
@@ -14,7 +14,7 @@ import pathops
 from fontTools.fontBuilder import FontBuilder
 from fontTools.misc.timeTools import timestampFromString
 from fontTools.pens.ttGlyphPen import TTGlyphPen
-from fontTools.ttLib import woff2
+from fontTools.ttLib.woff2 import WOFF2FlavorData
 from fontTools.ttLib.tables._g_l_y_f import Glyph, dropImpliedOnCurvePoints
 
 root = Path(__file__).resolve().parent
@@ -28,15 +28,16 @@ data = json.loads(subprocess.run(['bun', '-e', read], cwd=root.parent, capture_o
 # One grid step is 250 units: the letters' 4 × 6 box is 1000 × 1500, and the line is the alphabet sheet's 9-step row
 # pitch with the cap height centred in it
 upm, step, rows = 2048, 250, 9
-r = data['H'] * step
 ascent, descent = round((rows + 6) / 2 * step), -round((rows - 6) / 2 * step)
 # Every letter keeps one step of air either side of its outermost stroke centres; Q's tail counts for half its width
 bearing, tail = 1, 0.5
 space = 2 * step
+# Each weight is the same pieces at a multiple of the site's thickness
+weights = {'Regular': (400, 1), 'Bold': (700, 6)}
 
 # A circle as eight quadratic arcs, on-curve points on the circle; the side ones touch the upright and flat pieces' edges
 arc = math.pi / 4
-def circle(cx, cy):
+def circle(cx, cy, r):
     p = pathops.Path()
     p.moveTo(cx + r, cy)
     for i in range(8):
@@ -105,13 +106,15 @@ def rebuild(cs):
         p.close()
     return p
 
-def outline(shape):
+def outline(shape, k):
     xs = [x for piece in shape['pieces'] for x, _ in piece['s']]
     left = min(xs)
     right = max(xs) - tail if any(x > 4 for x in xs) else max(xs)
     place = lambda x, y: ((x - left + bearing) * step, (6 - y) * step)
-    paths = [polygon([place(*pt) for pt in piece['c']]) for piece in shape['pieces']]
-    paths += [circle(*place(*c['at'])) for c in shape['circles']]
+    # A corner sits H off its own end of the piece; k times H thickens the piece around the same centre line
+    thick = lambda c, end: place(*(e + (v - e) * k for v, e in zip(c, end)))
+    paths = [polygon([thick(c, end) for c, end in zip(piece['c'], [piece['s'][0], *[piece['s'][1]] * 2, piece['s'][0]])]) for piece in shape['pieces']]
+    paths += [circle(*place(*c['at']), data['H'] * k * step) for c in shape['circles']]
     cs = contours(union(paths))
     # Rounding can nudge an edge across another; merge again until the whole-unit outline is its own union
     while True:
@@ -130,32 +133,38 @@ def glyph(cs):
     dropImpliedOnCurvePoints(g)
     return g
 
-letters = {c: outline(shape) for c, shape in data['glyphs'].items()}
-order = ['.notdef', 'space', *letters]
-glyphs = {'.notdef': Glyph(), 'space': Glyph(), **{c: glyph(cs) for c, (cs, _) in letters.items()}}
-widths = {'.notdef': space, 'space': space, **{c: w for c, (_, w) in letters.items()}}
+def build(style, weight, k):
+    letters = {c: outline(shape, k) for c, shape in data['glyphs'].items()}
+    order = ['.notdef', 'space', *letters]
+    glyphs = {'.notdef': Glyph(), 'space': Glyph(), **{c: glyph(cs) for c, (cs, _) in letters.items()}}
+    widths = {'.notdef': space, 'space': space, **{c: w for c, (_, w) in letters.items()}}
 
-fb = FontBuilder(upm, isTTF=True)
-fb.setupGlyphOrder(order)
-fb.setupCharacterMap({32: 'space', **{ord(c): c for c in letters}})
-fb.setupGlyf(glyphs)
-glyf = fb.font['glyf']
-fb.setupHorizontalMetrics({n: (widths[n], getattr(glyf[n], 'xMin', 0)) for n in order})
-fb.setupHorizontalHeader(ascent=ascent, descent=descent)
-fb.setupNameTable({'familyName': 'Graphabet', 'styleName': 'Regular', 'uniqueFontIdentifier': 'Graphabet', 'fullName': 'Graphabet', 'psName': 'Graphabet'}, mac=False)
-fb.setupOS2(
-    version=4, achVendID='NONE', fsType=0, usWeightClass=400, fsSelection=0xC0,
-    sTypoAscender=ascent, sTypoDescender=descent, sTypoLineGap=0, usWinAscent=ascent, usWinDescent=-descent,
-    sxHeight=6 * step, sCapHeight=6 * step, ulUnicodeRange1=1, ulCodePageRange1=1,
-)
-fb.setupPost(keepGlyphNames=False, underlinePosition=-step, underlineThickness=round(2 * r))
-font = fb.font
-font['cmap'].tables = [t for t in font['cmap'].tables if (t.platformID, t.platEncID) == (3, 1)]
-font['head'].created = font['head'].modified = timestampFromString('Fri Oct 16 00:00:00 2026')
-font['head'].fontRevision = 1.0
-font.recalcTimestamp = False
+    fb = FontBuilder(upm, isTTF=True)
+    fb.setupGlyphOrder(order)
+    fb.setupCharacterMap({32: 'space', **{ord(c): c for c in letters}})
+    fb.setupGlyf(glyphs)
+    glyf = fb.font['glyf']
+    fb.setupHorizontalMetrics({n: (widths[n], getattr(glyf[n], 'xMin', 0)) for n in order})
+    fb.setupHorizontalHeader(ascent=ascent, descent=descent)
+    full = 'Graphabet' if style == 'Regular' else f'Graphabet {style}'
+    fb.setupNameTable({'familyName': 'Graphabet', 'styleName': style, 'uniqueFontIdentifier': full, 'fullName': full, 'psName': full.replace(' ', '-')}, mac=False)
+    fb.setupOS2(
+        version=4, achVendID='NONE', fsType=0, usWeightClass=weight, fsSelection=0xC0 if style == 'Regular' else 0xA0,
+        sTypoAscender=ascent, sTypoDescender=descent, sTypoLineGap=0, usWinAscent=ascent, usWinDescent=-descent,
+        sxHeight=6 * step, sCapHeight=6 * step, ulUnicodeRange1=1, ulCodePageRange1=1,
+    )
+    fb.setupPost(keepGlyphNames=False, underlinePosition=-step, underlineThickness=round(2 * data['H'] * k * step))
+    font = fb.font
+    font['cmap'].tables = [t for t in font['cmap'].tables if (t.platformID, t.platEncID) == (3, 1)]
+    font['head'].created = font['head'].modified = timestampFromString('Fri Oct 16 00:00:00 2026')
+    font['head'].fontRevision = 1.0
+    font['head'].macStyle = int(style == 'Bold')
+    font.recalcTimestamp = False
 
-# The TTF is the one an OS installs (Font Book and ~/Library/Fonts pass over WOFF2); the WOFF2 is the web's
-ttf = root / 'Graphabet.ttf'
-font.save(ttf)
-woff2.compress(str(ttf), str(root / 'Graphabet.woff2'), transform_tables={'glyf', 'loca', 'hmtx'})
+    # The TTF is the one an OS installs (Font Book and ~/Library/Fonts pass over WOFF2); the WOFF2 is the web's
+    name = full.replace(' ', '-')
+    if style == 'Regular': font.save(root / f'{name}.ttf')
+    font.flavor, font.flavorData = 'woff2', WOFF2FlavorData(transformedTables={'glyf', 'loca', 'hmtx'})
+    font.save(root / f'{name}.woff2')
+
+for style, (weight, k) in weights.items(): build(style, weight, k)

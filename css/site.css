@@ -2,13 +2,13 @@
 
 @font-face {
   font-family: Graphabet;
-  src: url('/font/Graphabet.woff2') format('woff2');
+  src: url('/font/Graphabet-Bold.woff2') format('woff2');
+  font-weight: bold;
   font-display: swap;
 }
 
 slide h2 {
   font-family: Graphabet, var(--font-ui);
-  font-weight: normal;
   letter-spacing: normal;
   text-transform: uppercase;
 }
