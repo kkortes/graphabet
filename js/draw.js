@@ -31,7 +31,7 @@ const bounds = g => {
 };
 // The rulers run the whole slide through both rows and every column, so they come from the box the letters are
 // drawn in, the drawn bounds most letters share, stepped by the pitch. No single letter moves a
-// line: I sits inside its column's lines and Q's tail crosses its column's right one
+// line: Q's tail crosses its column's right one
 const cell = Object.values(Object.groupBy(glyphs.map(bounds), b => JSON.stringify(b, (k, v) => typeof v === 'number' ? +v.toFixed(6) : v))).sort((a, b) => b.length - a.length)[0][0];
 // Inline, so the rulers can run past the sheet to the slide's edges in the letters' own coordinates
 const rule = (x1, y1, x2, y2) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#888" stroke-opacity="0.3" vector-effect="non-scaling-stroke"/>`;
