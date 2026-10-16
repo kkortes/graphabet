@@ -23,7 +23,15 @@
     <card vertical left g-2 p-3>
       <h6>@[block.name]</h6>
       <glyph-art role="img" aria-label="@[block.name]">@[$.unsafe(block.art)]</glyph-art>
+      <!-- if block.turns -->
+      <crow left g-3>
+        <!-- each block.turns as turn -->
+        <glyph-art turn>@[$.unsafe(turn)]</glyph-art>
+        <!-- /each -->
+      </crow>
+      <!-- else -->
       <small text-muted>@[block.note]</small>
+      <!-- /if -->
     </card>
     <!-- /each -->
   </crow>

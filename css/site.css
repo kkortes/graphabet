@@ -14,7 +14,7 @@ slide {
 }
 
 slide-grid {
-  --intro: calc(var(--unit) * 80);
+  --intro: calc(var(--unit) * 100);
   --gap: calc(var(--unit) * 12);
   container-type: size;
   display: flex;
@@ -33,6 +33,18 @@ slide-intro {
   flex-direction: column;
   gap: calc(var(--unit) * 4);
   width: var(--intro);
+}
+
+slide-intro h1 {
+  font-size: 56px;
+}
+
+slide-intro p {
+  font-size: 22px;
+}
+
+slide-intro small {
+  font-size: 16px;
 }
 
 slide-grid stack {
@@ -130,6 +142,11 @@ slide-text card glyph-art {
   height: 64px;
 }
 
+slide-text card glyph-art[turn] {
+  width: 20px;
+  height: 20px;
+}
+
 glyph-art {
   display: block;
 }
@@ -223,17 +240,20 @@ color-toggle {
   right: calc(var(--unit) * 4);
 }
 
-color-toggle [role='switch'] {
-  filter: grayscale(1);
-  transition: filter 400ms ease-in-out;
-}
-
+color-toggle [role='switch'],
 color-toggle [role='switch']:checked {
-  filter: none;
+  background-color: oklch(from var(--input) calc(l + 0.06) 0 h);
+  box-shadow: var(--ring-inset);
 }
 
 color-toggle [role='switch']:before {
   background-image: conic-gradient(in oklch longer hue, oklch(0.8 0.15 0), oklch(0.8 0.15 360));
+  filter: grayscale(1) brightness(3);
+  transition: all 150ms ease-in-out, filter 400ms ease-in-out;
+}
+
+color-toggle [role='switch']:checked:before {
+  filter: none;
 }
 
 card[picked] {

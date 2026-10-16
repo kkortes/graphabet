@@ -46,11 +46,18 @@ export const alphabet = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 91
 // The building blocks at the scale the letters use: one unit-long flat piece, its first triangle and an end circle
 const unit = shapes([[[0, 0], [1, 0]]]);
 const near = '-0.1 -0.16 1.2 0.32';
+// The flat piece is the base; the other three kinds are it turned: upright 90°, corner 45°, diagonal 2:3 (about 56°)
+const turns = [[[0, 0], [0, 1]], [[0, 1], [1, 0]], [[0, 3], [2, 0]]];
+const bare = s => ({ pieces: shapes([s]).pieces, circles: [] });
+const fit = s => {
+  const c = bare(s).pieces[0].c, [xs, ys] = [c.map(p => p[0]), c.map(p => p[1])], pad = 0.1;
+  return `${Math.min(...xs) - pad} ${Math.min(...ys) - pad} ${Math.max(...xs) - Math.min(...xs) + 2 * pad} ${Math.max(...ys) - Math.min(...ys) + 2 * pad}`;
+};
 export const blocks = [
   { name: 'Triangle', note: 'The one shape', art: art(near, tri(halves(unit.pieces[0].c)[0], 'flat', true, [0, 0])) },
   { name: 'Rectangle', note: 'Two triangles', art: art(near, draw({ pieces: unit.pieces, circles: [] })) },
   { name: 'Circle', note: 'On every end', art: art(near, draw({ pieces: [], circles: [{ k: 'circle', at: [0.5, 0] }] })) },
-  { name: 'Piece', note: 'Turned, in A', art: art('-0.5 -0.5 6 7', draw(glyphs[0])) }
+  { name: '3 rotations', art: art(fit(turns[1]), draw(bare(turns[1]))), turns: turns.map(s => art(fit(s), draw(bare(s)))) }
 ];
 
 export const overlapping = glyphs.filter(g => clash([...g.pieces, ...g.circles])).map(g => g.c);
