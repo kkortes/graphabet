@@ -9,7 +9,7 @@
     totals: `${rects} rectangles · ${rects * 2} triangles · ${glyphs.flatMap(g => g.circles).length} circles`,
     check: overlapping.length ? `Overlap in ${overlapping.join(', ')}` : 'A-Z | Latin alphabet',
     image: alphabet,
-    legend: Object.entries(colors).map(([k, color]) => ({ name: capital(k), color }))
+    legend: Object.keys(colors).map(k => ({ name: capital(k), k }))
   });
 </script>
 
@@ -21,10 +21,10 @@
       <badge bg-green text-green>@[this.check]</badge>
     </crow>
   </crow>
-  <alphabet-sheet role="img" aria-label="A to Z built from rotated rectangles joined by circles">@[$.unsafe(white ? this.image.white : this.image.colored)]</alphabet-sheet>
+  <alphabet-sheet role="img" aria-label="A to Z built from rotated rectangles joined by circles">@[$.unsafe(this.image)]</alphabet-sheet>
   <crow g-4 wrap left w-full>
     <!-- each this.legend as item -->
-    <legend-item style="color: @[white ? '#fff' : item.color]">@[item.name]</legend-item>
+    <legend-item style="--k: var(--piece-@[item.k])">@[item.name]</legend-item>
     <!-- /each -->
   </crow>
 </slide-wide>

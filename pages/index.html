@@ -14,15 +14,17 @@
       import vibe from "/node_modules/@ape-egg/vibe/index.js";
       import code from "/js/code.js";
       import favicon from "/js/favicon.js";
+      import { colors } from "/js/draw.js";
 
       window.$ = vibe({ white: true });
+      Object.entries(colors).forEach(([k, c]) => document.documentElement.style.setProperty(`--piece-${k}`, c));
       favicon();
       $.on("ready", code);
     </script>
   </head>
 
   <body stylecheat dark vibe-fouc>
-    <carousel>
+    <carousel white="@[white]">
       <slides y scrollbar>
         <slide><component src="/components/Grid.html"></component></slide>
         <slide><component src="/components/Message.html"></component></slide>
@@ -31,7 +33,7 @@
       </slides>
     </carousel>
     <color-toggle>
-      <button secondary sm aria-pressed="@[!white]" onclick="$.white = !$.white">Color toggle</button>
+      <input type="checkbox" role="switch" aria-label="Colors" checked="@[!white]" onchange="$.white = !this.checked" />
     </color-toggle>
   </body>
 </html>

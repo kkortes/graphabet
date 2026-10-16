@@ -22,7 +22,7 @@
     <!-- each this.blocks as block -->
     <card vertical left g-2 p-3>
       <h6>@[block.name]</h6>
-      <img src="@[white ? block.image.white : block.image.colored]" alt="@[block.name]" />
+      <glyph-art role="img" aria-label="@[block.name]">@[$.unsafe(block.art)]</glyph-art>
       <small text-muted>@[block.note]</small>
     </card>
     <!-- /each -->

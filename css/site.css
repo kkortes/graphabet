@@ -9,7 +9,7 @@ body {
 slide {
   align-items: center;
   justify-content: center;
-  padding: calc(var(--unit) * 8) calc(var(--unit) * 6);
+  padding: calc(var(--unit) * 16) calc(var(--unit) * 6) calc(var(--unit) * 8);
   box-sizing: border-box;
 }
 
@@ -57,12 +57,12 @@ slide-grid stack {
   }
 }
 
-slide-grid img {
+slide-grid :is(img, glyph-art) {
   width: 100%;
   height: 100%;
 }
 
-slide-grid img[flash] {
+slide-grid glyph-art[flash] {
   animation: flash 900ms ease-out forwards;
 }
 
@@ -125,15 +125,19 @@ slide-text card {
   flex: 1 1 120px;
 }
 
-slide-text card img {
+slide-text card glyph-art {
   width: 100%;
   height: 64px;
-  object-fit: contain;
 }
 
-slide-wide img {
+glyph-art {
+  display: block;
+}
+
+glyph-art > svg {
+  display: block;
   width: 100%;
-  object-fit: contain;
+  height: 100%;
 }
 
 slide:has(alphabet-sheet) {
@@ -150,11 +154,12 @@ alphabet-sheet svg {
   height: auto;
 }
 
-slide-wide card img {
+slide-wide card glyph-art {
+  width: 100%;
   height: 90px;
 }
 
-slide-wide img[big] {
+slide-wide glyph-art[big] {
   width: 200px;
   height: 240px;
 }
@@ -169,13 +174,13 @@ slide-wide codie {
   min-width: 0;
 }
 
-slide-wide card:has(img[big]) {
+slide-wide card:has(glyph-art[big]) {
   flex: none;
   width: calc(var(--unit) * 78);
 }
 
 @media (width <= 768px) {
-  slide-wide card:has(img[big]) {
+  slide-wide card:has(glyph-art[big]) {
     width: auto;
   }
 }
@@ -186,10 +191,49 @@ step {
   font-size: 12px;
 }
 
+.piece {
+  fill: var(--k);
+  transition: fill 400ms ease-in-out, stroke 400ms ease-in-out;
+}
+
+polygon.piece:not(.seam) {
+  stroke: var(--k);
+}
+
+legend-item {
+  color: var(--k);
+  transition: color 400ms ease-in-out;
+}
+
+carousel[white] .piece {
+  fill: #fff;
+}
+
+carousel[white] polygon.piece:not(.seam) {
+  stroke: #fff;
+}
+
+carousel[white] legend-item {
+  color: #fff;
+}
+
 color-toggle {
   position: fixed;
   top: calc(var(--unit) * 4);
   right: calc(var(--unit) * 4);
+}
+
+color-toggle [role='switch'] {
+  filter: grayscale(1);
+  transition: filter 400ms ease-in-out;
+}
+
+color-toggle [role='switch']:checked {
+  filter: none;
+}
+
+color-toggle [role='switch']:before {
+  background-image: conic-gradient(in oklch longer hue, oklch(0.8 0.15 0), oklch(0.8 0.15 360));
 }
 
 card[picked] {

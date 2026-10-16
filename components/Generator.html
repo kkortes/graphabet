@@ -1,6 +1,6 @@
 <script type="module">
   import component from '@ape-egg/vibe/component';
-  import { draw, ghost, looks } from '/js/draw.js';
+  import { art, draw, ghost } from '/js/draw.js';
   import { capital, generate } from '/js/generator.js';
 
   const count = (shapes, k) => shapes.filter(p => p.k === k).length;
@@ -10,8 +10,8 @@
     return {
       seed, seams, pick, ...tally,
       fresh: glyphs.filter(x => !x.match).length,
-      glyphs: glyphs.map(x => ({ image: looks('-0.5 -0.5 6 7', look => draw(x, look), seams), label: x.match ? `Same as ${x.match}` : 'New' })),
-      big: looks('-0.5 -0.5 6 7', look => ghost + draw(g, look), seams),
+      glyphs: glyphs.map(x => ({ art: art('-0.5 -0.5 6 7', draw(x, { seams })), label: x.match ? `Same as ${x.match}` : 'New' })),
+      big: art('-0.5 -0.5 6 7', ghost + draw(g, { seams })),
       verdict: g.match ? `Same as ${g.match}` : 'New letter',
       steps: [
         'Glyph',
@@ -45,9 +45,9 @@
 
   <crow g-3 w-full stretch sm:vertical>
     <codie dark></codie>
-    <card vertical left g-2>
+    <card left g-2>
       <crow justify-between w-full><h6>Glyph @[this.pick + 1]</h6><badge secondary>@[this.verdict]</badge></crow>
-      <img big src="@[white ? this.big.white : this.big.colored]" alt="The chosen glyph over every location A–Z uses" />
+      <glyph-art big role="img" aria-label="The chosen glyph over every location A–Z uses">@[$.unsafe(this.big)]</glyph-art>
       <ol>
         <!-- each this.steps as step -->
         <li><step>@[step]</step></li>
@@ -59,7 +59,7 @@
   <crow g-2 w-full stretch wrap>
     <!-- each this.glyphs as glyph, i -->
     <card f-1 vertical g-2 p-2 picked="@[this.pick === i]">
-      <img src="@[white ? glyph.image.white : glyph.image.colored]" alt="Glyph @[i + 1]" />
+      <glyph-art role="img" aria-label="Glyph @[i + 1]">@[$.unsafe(glyph.art)]</glyph-art>
       <badge bg-hollow>@[glyph.label]</badge>
       <button tertiary sm onclick="this.show(@[i])">Derive</button>
     </card>
@@ -67,9 +67,11 @@
   </crow>
 
   <crow left g-2 wrap>
+    <!-- if false -->
     <badge bg-green text-green>@[this.fresh] of 8 new · seed @[this.seed]</badge>
     <badge bg-red text-red>@[this.off] off the alphabet</badge>
     <badge secondary>@[this.apart] fell apart</badge>
     <badge bg-orange text-orange>@[this.overlap] overlapped</badge>
+    <!-- /if -->
   </crow>
 </slide-wide>
