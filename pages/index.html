@@ -13,19 +13,22 @@
       import vibe from "/node_modules/@ape-egg/vibe/index.js";
       import code from "/js/code.js";
 
-      window.$ = vibe({});
+      window.$ = vibe({ white: true });
       $.on("ready", code);
     </script>
   </head>
 
   <body stylecheat dark vibe-fouc>
     <carousel>
-      <slides y>
+      <slides y data-hmr>
         <slide><component src="/components/Grid.html"></component></slide>
         <slide><component src="/components/Message.html"></component></slide>
         <slide><component src="/components/Alphabet.html"></component></slide>
         <slide><component src="/components/Generator.html"></component></slide>
       </slides>
     </carousel>
+    <color-toggle>
+      <button secondary sm aria-pressed="@[!white]" onclick="$.white = !$.white">Color toggle</button>
+    </color-toggle>
   </body>
 </html>

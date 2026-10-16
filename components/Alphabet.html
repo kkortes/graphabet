@@ -21,10 +21,10 @@
       <badge bg-green text-green>@[this.check]</badge>
     </crow>
   </crow>
-  <img src="@[this.image]" alt="A to Z built from rotated rectangles joined by circles" />
+  <img src="@[white ? this.image.white : this.image.colored]" alt="A to Z built from rotated rectangles joined by circles" />
   <crow g-4 wrap left w-full>
     <!-- each this.legend as item -->
-    <legend-item style="color: @[item.color]">@[item.name]</legend-item>
+    <legend-item style="color: @[white ? '#fff' : item.color]">@[item.name]</legend-item>
     <!-- /each -->
   </crow>
 </slide-wide>

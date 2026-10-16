@@ -34,6 +34,16 @@ slide-wide {
   width: min(1100px, 100%);
 }
 
+slide-text card {
+  flex: 1 1 120px;
+}
+
+slide-text card img {
+  width: 100%;
+  height: 64px;
+  object-fit: contain;
+}
+
 slide-wide img {
   width: 100%;
   object-fit: contain;
@@ -58,6 +68,12 @@ legend-item,
 step {
   font-family: var(--font-mono);
   font-size: 12px;
+}
+
+color-toggle {
+  position: fixed;
+  top: calc(var(--unit) * 4);
+  right: calc(var(--unit) * 4);
 }
 
 card[picked] {

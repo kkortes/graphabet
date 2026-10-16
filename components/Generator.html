@@ -1,18 +1,17 @@
 <script type="module">
   import component from '@ape-egg/vibe/component';
-  import { draw, ghost, svg } from '/js/draw.js';
+  import { draw, ghost, looks } from '/js/draw.js';
   import { capital, generate } from '/js/generator.js';
 
   const count = (shapes, k) => shapes.filter(p => p.k === k).length;
-  const view = (seed, seams, pick, white) => {
+  const view = (seed, seams, pick) => {
     const { glyphs, tally } = generate(seed);
     const g = glyphs[pick];
-    const look = { seams, paint: white && '#fff' };
     return {
-      seed, seams, pick, white, ...tally,
+      seed, seams, pick, ...tally,
       fresh: glyphs.filter(x => !x.match).length,
-      glyphs: glyphs.map(x => ({ image: svg('-0.5 -0.5 6 7', draw(x, look)), label: x.match ? `Same as ${x.match}` : 'New' })),
-      big: svg('-0.5 -0.5 6 7', ghost + draw(g, look)),
+      glyphs: glyphs.map(x => ({ image: looks('-0.5 -0.5 6 7', look => draw(x, look), seams), label: x.match ? `Same as ${x.match}` : 'New' })),
+      big: looks('-0.5 -0.5 6 7', look => ghost + draw(g, look), seams),
       verdict: g.match ? `Same as ${g.match}` : 'New letter',
       steps: [
         'Glyph',
@@ -26,12 +25,11 @@
   };
 
   component({
-    ...view(1, false, 0, false),
-    show(i) { Object.assign(this, view(this.seed, this.seams, i, this.white)); },
-    toggleSeams() { Object.assign(this, view(this.seed, !this.seams, this.pick, this.white)); },
-    toggleColors() { Object.assign(this, view(this.seed, this.seams, this.pick, !this.white)); },
-    next() { Object.assign(this, view(this.seed + 1, this.seams, 0, this.white)); },
-    prev() { Object.assign(this, view(Math.max(1, this.seed - 1), this.seams, 0, this.white)); }
+    ...view(1, false, 0),
+    show(i) { Object.assign(this, view(this.seed, this.seams, i)); },
+    toggleSeams() { Object.assign(this, view(this.seed, !this.seams, this.pick)); },
+    next() { Object.assign(this, view(this.seed + 1, this.seams, 0)); },
+    prev() { Object.assign(this, view(Math.max(1, this.seed - 1), this.seams, 0)); }
   });
 </script>
 
@@ -39,7 +37,6 @@
   <crow justify-between w-full wrap g-2>
     <h2>New letters</h2>
     <crow g-2 wrap left>
-      <button secondary sm onclick="this.toggleColors()">Toggle colors</button>
       <button secondary sm onclick="this.toggleSeams()">@[this.seams ? 'Hide triangles' : 'Show triangles']</button>
       <button secondary sm onclick="this.prev()">Previous seed</button>
       <button primary sm onclick="this.next()">Next seed</button>
@@ -50,7 +47,7 @@
     <codie dark></codie>
     <card f-1 vertical left up g-2>
       <crow justify-between w-full><h6>Glyph @[this.pick + 1]</h6><badge secondary>@[this.verdict]</badge></crow>
-      <img big src="@[this.big]" alt="The chosen glyph over every location A–Z uses" />
+      <img big src="@[white ? this.big.white : this.big.colored]" alt="The chosen glyph over every location A–Z uses" />
       <ol>
         <!-- each this.steps as step -->
         <li><step>@[step]</step></li>
@@ -62,7 +59,7 @@
   <crow g-2 w-full stretch wrap>
     <!-- each this.glyphs as glyph, i -->
     <card f-1 vertical g-2 p-2 picked="@[this.pick === i]">
-      <img src="@[glyph.image]" alt="Glyph @[i + 1]" />
+      <img src="@[white ? glyph.image.white : glyph.image.colored]" alt="Glyph @[i + 1]" />
       <badge bg-hollow>@[glyph.label]</badge>
       <button tertiary sm onclick="this.show(@[i])">Derive</button>
     </card>

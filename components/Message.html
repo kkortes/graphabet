@@ -1,3 +1,10 @@
+<script type="module">
+  import component from '@ape-egg/vibe/component';
+  import { blocks } from '/js/draw.js';
+
+  component({ blocks });
+</script>
+
 <slide-text>
   <h2>Why this exists</h2>
   <p>
@@ -11,10 +18,19 @@
     think, and this page is built the same way: one triangle, two of them make a rectangle, and that rectangle, turned,
     draws every line of every letter.
   </p>
+  <crow g-3 w-full stretch wrap>
+    <!-- each this.blocks as block -->
+    <card vertical left g-2 p-3>
+      <h6>@[block.name]</h6>
+      <img src="@[white ? block.image.white : block.image.colored]" alt="@[block.name]" />
+      <small text-muted>@[block.note]</small>
+    </card>
+    <!-- /each -->
+  </crow>
   <p>
-    <a href="https://doi.org/10.1109/SWAT.1973.11" target="_blank" rel="noopener" primary>Rewriting</a> a graph means
-    finding one piece of it and swapping in another. John Pfaltz and Azriel Rosenfeld were among the first to do it, in
-    1969, on labelled graphs they called webs, and the rule sets that do it became
+    <a href="https://shaggydev.com/2022/11/20/graph-rewriting/" target="_blank" rel="noopener" primary>Graph rewriting</a>
+    means finding one piece of a graph and swapping in another. John Pfaltz and Azriel Rosenfeld were among the first to
+    do it, in 1969, on labelled graphs they called webs, and the rule sets that do it became
     <a href="https://www.ijcai.org/Proceedings/69/Papers/054.pdf" target="_blank" rel="noopener" primary>graph grammars</a>.
     In 1973 Hartmut Ehrig, Michael Pfender and Hans-Jürgen Schneider gave graph rewriting the algebraic form much of the
     field still builds on.
