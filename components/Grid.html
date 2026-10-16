@@ -1,9 +1,10 @@
 <script type="module">
   import component from '@ape-egg/vibe/component';
-  import { art, draw, ghost, glyphs, svg } from '/js/draw.js';
+  import { art, draw, ghost, glyphs, svg, word } from '/js/draw.js';
 
   const id = component({
     grid: svg('-0.5 -0.5 6 7', ghost),
+    title: word('GRAPHABET', 'var(--primary-text)'),
     letters: Object.fromEntries(glyphs.map(g => [g.c, art('-0.5 -0.5 6 7', draw(g))])),
     flashes: []
   });
@@ -20,10 +21,9 @@
 
 <slide-grid>
   <slide-intro>
-    <h1>Graphabet</h1>
+    <h1 aria-label="Graphabet"><glyph-art aria-hidden="true">@[$.unsafe(this.title)]</glyph-art></h1>
     <p>A minimalistic &amp; mathematically correct alphabet</p>
     <small text-muted>It's possible to simplify it even more, but at the cost of elegance.</small>
-    <small text-muted>Scroll down to continue</small>
   </slide-intro>
   <stack>
     <img src="@[this.grid]" alt="Every place a line of A–Z can sit" />
@@ -32,4 +32,6 @@
     <!-- /each -->
     <card splash bg-yellow text-yellow p-2><b>Type something!</b></card>
   </stack>
+  <card splash toggle bg-yellow text-yellow p-2 sm><b>Toggle me!</b></card>
+  <badge scroll-hint secondary>Scroll down to continue</badge>
 </slide-grid>

@@ -45,6 +45,11 @@ slide-intro p {
 
 slide-intro small {
   font-size: 16px;
+  text-wrap: pretty;
+}
+
+slide-intro h1 svg {
+  height: auto;
 }
 
 slide-grid stack {
@@ -78,13 +83,33 @@ slide-grid glyph-art[flash] {
   animation: flash 900ms ease-out forwards;
 }
 
-slide-grid card[splash] {
+card[splash] {
+  rotate: 12deg;
+}
+
+stack card[splash] {
   place-self: start;
   width: max-content;
   margin: calc(100% * 0.5 / 6) 0 0 calc(100% * 4.5 / 6);
   translate: -20% -80%;
-  rotate: 12deg;
-  animation: splash 600ms ease-in-out infinite alternate;
+}
+
+card[splash][toggle] {
+  position: fixed;
+  top: calc(var(--unit) * 18);
+  right: calc(var(--unit) * 14);
+  pointer-events: none;
+}
+
+badge[scroll-hint] {
+  position: fixed;
+  bottom: calc(var(--unit) * 6);
+  left: 50%;
+  translate: -50%;
+  pointer-events: none;
+  animation: hint linear both;
+  animation-timeline: --slides-scroll;
+  animation-range: 0 calc(var(--unit) * 30);
 }
 
 @keyframes flash {
@@ -97,9 +122,9 @@ slide-grid card[splash] {
   }
 }
 
-@keyframes splash {
+@keyframes hint {
   to {
-    scale: 1.08;
+    opacity: 0;
   }
 }
 
@@ -108,7 +133,7 @@ slide-grid card[splash] {
     padding-inline: 0;
   }
 
-  slide-grid card[splash] {
+  stack card[splash] {
     display: none;
   }
 }
@@ -140,11 +165,6 @@ slide-text card {
 slide-text card glyph-art {
   width: 100%;
   height: 64px;
-}
-
-slide-text card glyph-art[turn] {
-  width: 20px;
-  height: 20px;
 }
 
 glyph-art {
@@ -220,6 +240,10 @@ polygon.piece:not(.seam) {
 legend-item {
   color: var(--k);
   transition: color 400ms ease-in-out;
+}
+
+card[gray] .piece {
+  fill: var(--muted-foreground);
 }
 
 carousel[white] .piece {

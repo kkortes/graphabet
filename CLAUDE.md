@@ -9,7 +9,7 @@ A four-slide site about the love for rewriting, graph grammars and wave function
 
 ## Site
 
-vibe + vibe-compiler + stylecheat (hybrid build, vendored as `css/stylecheat.css`, `<body stylecheat dark>`) + codie. `pages/index.html` holds a vertical `<carousel><slides y>` with one component per slide: Grid, Message, Alphabet, Generator. Global state is `white` (starts `true`), flipped by the fixed stylecheat switch in the top right (grayscale off, colour-wheel thumb on). It sets `<carousel white>`; every piece is inline SVG coloured from CSS (`--piece-<kind>`, set from `colors` at boot), so the pieces and legend fade between white and colour in 400ms. [js/code.js](js/code.js) fills the generator's `<codie>` with the rules, written from the generator's own slots.
+vibe + vibe-compiler + stylecheat (hybrid build, vendored as `css/stylecheat.css`, `<body stylecheat dark>`) + codie. `pages/index.html` holds a vertical `<carousel><slides y>` with one component per slide: Grid, Alphabet, Message, Generator. Global state is `white` (starts `true`), flipped by the fixed stylecheat switch in the top right (grayscale off, colour-wheel thumb on). It sets `<carousel white>`; every piece is inline SVG coloured from CSS (`--piece-<kind>`, set from `colors` at boot), so the pieces and legend fade between white and colour in 400ms. [js/code.js](js/code.js) fills the generator's `<codie>` with the rules, written from the generator's own slots.
 
 ## Modules
 

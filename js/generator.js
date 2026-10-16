@@ -17,6 +17,16 @@ const marks = { Leg: [[2, 3], [4, 6]], Tail: [[4, 5], [5, 6]], Peak: [[0, 3], [2
 
 export const capital = s => s[0].toUpperCase() + s.slice(1);
 
+// Each joint rule once: its text for the panel and the derivation, and when it fires. The geometry it describes is in
+// build: l0 moves the top and bottom bars' start, rTop / rMid / rBot their ends
+const joints = [
+  { rule: 'Round left + top or bottom Bar → that Bar starts one step in', fires: (c, top, bottom) => c.left === 'Round' && [top, bottom].includes('Bar') },
+  { rule: 'Round right + top or bottom Bar → that Bar stops one step short', fires: (c, top, bottom) => c.right === 'Round' && [top, bottom].includes('Bar') },
+  { rule: 'Bowl right + top or middle Bar → that Bar stops one step short', fires: (c, top) => c.right === 'Bowl' && [top, c.middle].includes('Bar') },
+  { rule: 'Peak + top Bar → Peak alone', fires: c => c.mark === 'Peak' && c.top === 'Bar' },
+  { rule: 'Vee + bottom Bar → Vee alone', fires: c => c.mark === 'Vee' && c.bottom === 'Bar' }
+];
+
 export const grammar = [
   '## Part rules',
   `Glyph → ${Object.keys(slots).map(capital).join(' ')}`,
@@ -24,10 +34,7 @@ export const grammar = [
   'Option that leaves the top or bottom untouched → not chosen',
   '',
   '## Joint rules',
-  '- Round left + Bar → Bar starts one step in',
-  '- Round or Bowl right + Bar → Bar stops one step short',
-  '- Peak + top Bar → Peak alone',
-  '- Vee + bottom Bar → Vee alone',
+  ...joints.map(j => `- ${j.rule}`),
   '',
   '## Circle rules',
   '- Pieces meet → a circle covers the joint',
@@ -37,8 +44,16 @@ export const grammar = [
   '## Rejection rules',
   '- Piece not on an A–Z location → redraw',
   '- Glyph falls apart → redraw',
-  '- Pieces that share no end overlap, or a circle covers a piece that doesn\'t end at it → redraw'
+  '- Pieces that share no end overlap, or a circle covers a piece that doesn\'t end at it → redraw',
+  '- More than 3 loose ends, or more than 4 when two mirror across a centre line → redraw'
 ].join('\n');
+
+// Two loose ends mirror each other across the letter box's vertical (x 2) or horizontal (y 3) centre line
+const mirrored = ends => ends.some((p, i) => ends.slice(i + 1).some(q => (q[0] === 4 - p[0] && q[1] === p[1]) || (q[0] === p[0] && q[1] === 6 - p[1])));
+const tooLoose = circles => {
+  const ends = circles.filter(c => c.loose).map(c => c.at);
+  return ends.length > (mirrored(ends) ? 4 : 3);
+};
 
 const rng = s => () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296;
 // Which edges of the box an option's strokes touch: the top (y 0) and the bottom (y 6)
@@ -54,17 +69,13 @@ const choose = r => Object.entries(slots).reduce((c, [s, o], i, all) => {
 }, {});
 
 const build = c => {
-  const fired = [];
   const top = c.mark === 'Peak' ? 'None' : c.top;
   const bottom = c.mark === 'Vee' ? 'None' : c.bottom;
   const l0 = c.left === 'Round' ? 1 : 0;
   const rTop = ['Round', 'Bowl'].includes(c.right) ? 3 : 4;
   const rMid = c.right === 'Bowl' ? 3 : 4;
   const rBot = c.right === 'Round' ? 3 : 4;
-  if (c.mark === 'Peak' && c.top === 'Bar') fired.push('Peak + top Bar → Peak alone');
-  if (c.mark === 'Vee' && c.bottom === 'Bar') fired.push('Vee + bottom Bar → Vee alone');
-  if (l0 && (top === 'Bar' || bottom === 'Bar')) fired.push('Round left + Bar → Bar starts one step in');
-  if ((rTop === 3 && top === 'Bar') || (rBot === 3 && bottom === 'Bar') || (rMid === 3 && c.middle === 'Bar')) fired.push(`${c.right} right + Bar → Bar stops one step short`);
+  const fired = joints.filter(j => j.fires(c, top, bottom)).map(j => j.rule);
   const strokes = [
     sides.left[c.left], sides.right[c.right],
     top === 'Bar' && [[l0, 0], [rTop, 0]],
@@ -85,7 +96,7 @@ const connected = ss => {
 
 export const generate = seed => {
   const r = rng(seed);
-  const tally = { off: 0, apart: 0, overlap: 0 };
+  const tally = { off: 0, apart: 0, overlap: 0, loose: 0 };
   const glyphs = Array.from({ length: 8 }, () => {
     for (;;) {
       const g = build(choose(r));
@@ -93,6 +104,7 @@ export const generate = seed => {
       if (!connected(g.segs)) { tally.apart++; continue; }
       const parts = shapes(g.segs);
       if (clash([...parts.pieces, ...parts.circles])) { tally.overlap++; continue; }
+      if (tooLoose(parts.circles)) { tally.loose++; continue; }
       return { ...g, ...parts, match: known[sig(g.segs)] };
     }
   });
