@@ -1,0 +1,77 @@
+<script type="module">
+  import component from '@ape-egg/vibe/component';
+  import { draw, ghost, svg } from '/js/draw.js';
+  import { capital, generate } from '/js/generator.js';
+
+  const count = (shapes, k) => shapes.filter(p => p.k === k).length;
+  const view = (seed, seams, pick) => {
+    const { glyphs, tally } = generate(seed);
+    const g = glyphs[pick];
+    return {
+      seed, seams, pick, ...tally,
+      fresh: glyphs.filter(x => !x.match).length,
+      glyphs: glyphs.map(x => ({ image: svg('-0.5 -0.5 6 7', draw(x, { seams })), label: x.match ? `Same as ${x.match}` : 'New' })),
+      big: svg('-0.5 -0.5 6 7', ghost + draw(g, { seams })),
+      verdict: g.match ? `Same as ${g.match}` : 'New letter',
+      steps: [
+        'Glyph',
+        Object.keys(g.c).map(capital).join(' '),
+        Object.entries(g.c).map(([s, v]) => `${capital(s)} → ${v}`).join(' · '),
+        g.fired.join(' · ') || 'No joint rule fired',
+        `Upright ×${count(g.pieces, 'upright')} · Flat ×${count(g.pieces, 'flat')} · Corner ×${count(g.pieces, 'corner')} · Diagonal ×${count(g.pieces, 'diagonal')} · Joint ×${g.joints.length}`,
+        `${g.pieces.length} rectangles · ${g.pieces.length * 2} triangles · ${g.joints.length} circles · none overlapping`
+      ]
+    };
+  };
+
+  component({
+    ...view(1, false, 0),
+    show(i) { Object.assign(this, view(this.seed, this.seams, i)); },
+    toggle() { Object.assign(this, view(this.seed, !this.seams, this.pick)); },
+    next() { Object.assign(this, view(this.seed + 1, this.seams, 0)); },
+    prev() { Object.assign(this, view(Math.max(1, this.seed - 1), this.seams, 0)); }
+  });
+</script>
+
+<slide-wide>
+  <crow justify-between w-full wrap g-2>
+    <h2>New letters</h2>
+    <crow g-2>
+      <button secondary sm onclick="this.toggle()">@[this.seams ? 'Hide triangles' : 'Show triangles']</button>
+      <button secondary sm onclick="this.prev()">Previous seed</button>
+      <button primary sm onclick="this.next()">Next seed</button>
+    </crow>
+  </crow>
+
+  <crow g-3 w-full stretch sm:vertical>
+    <codie dark></codie>
+    <card f-1 vertical left up g-2>
+      <crow justify-between w-full><h6>Glyph @[this.pick + 1]</h6><badge secondary>@[this.verdict]</badge></crow>
+      <crow g-3 w-full left up sm:vertical>
+        <img big src="@[this.big]" alt="The chosen glyph over every location A–Z uses" />
+        <ol>
+          <!-- each this.steps as step -->
+          <li><step>@[step]</step></li>
+          <!-- /each -->
+        </ol>
+      </crow>
+    </card>
+  </crow>
+
+  <crow g-2 w-full stretch wrap>
+    <!-- each this.glyphs as glyph, i -->
+    <card f-1 vertical g-2 p-2 picked="@[this.pick === i]">
+      <img src="@[glyph.image]" alt="Glyph @[i + 1]" />
+      <badge bg-hollow>@[glyph.label]</badge>
+      <button tertiary sm onclick="this.show(@[i])">Derive</button>
+    </card>
+    <!-- /each -->
+  </crow>
+
+  <crow left g-2 wrap>
+    <badge bg-green text-green>@[this.fresh] of 8 new · seed @[this.seed]</badge>
+    <badge bg-red text-red>@[this.off] off the alphabet</badge>
+    <badge secondary>@[this.apart] fell apart</badge>
+    <badge bg-orange text-orange>@[this.overlap] overlapped</badge>
+  </crow>
+</slide-wide>

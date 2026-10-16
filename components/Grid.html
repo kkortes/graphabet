@@ -1,0 +1,10 @@
+<script type="module">
+  import component from '@ape-egg/vibe/component';
+  import { ghost, svg } from '/js/draw.js';
+
+  component({ grid: svg('-0.5 -0.5 6 7', ghost) });
+</script>
+
+<slide-grid>
+  <img src="@[this.grid]" alt="Every place a line of A–Z can sit" />
+</slide-grid>

@@ -1,0 +1,29 @@
+{
+  "name": "rewrite",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "\"$(git rev-parse --path-format=absolute --git-common-dir)/../../dev.sh\" 'bunx --bun vite --port $PORT --strictPort'",
+    "build": "vibe compile"
+  },
+  "dependencies": {
+    "@ape-egg/codie": "^0.2.1",
+    "@ape-egg/vibe": "^4.3.17"
+  },
+  "devDependencies": {
+    "@ape-egg/vibe-compiler": "^4.3.17",
+    "@ape-egg/vite-plugin-vibe": "^0.5.2",
+    "vite": "^8.3.4"
+  },
+  "vibe-compiler": {
+    "source": "./",
+    "output": "./compiled",
+    "pages": "pages",
+    "root": "pages",
+    "spa": true,
+    "elementsAsIs": true,
+    "componentsAsIs": false,
+    "skipFiles": ["vite.config.js", "package.json", "bun.lock", "CLAUDE.md"]
+  }
+}

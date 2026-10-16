@@ -1,0 +1,62 @@
+@import url('/css/stylecheat.css');
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+slide {
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--unit) * 8) calc(var(--unit) * 6);
+  box-sizing: border-box;
+}
+
+slide-grid img {
+  height: 80dvh;
+}
+
+slide-text,
+slide-wide {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--unit) * 5);
+}
+
+slide-text {
+  max-width: 640px;
+  line-height: 1.65;
+}
+
+slide-wide {
+  width: min(1100px, 100%);
+}
+
+slide-wide img {
+  width: 100%;
+  object-fit: contain;
+}
+
+slide-wide card img {
+  height: 90px;
+}
+
+slide-wide img[big] {
+  width: 200px;
+  height: 240px;
+}
+
+slide-wide codie {
+  flex: 0 1 380px;
+}
+
+legend-item,
+step {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+card[picked] {
+  outline: 1px solid var(--primary);
+}
