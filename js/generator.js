@@ -5,7 +5,7 @@ export const slots = {
   left: ['Stem', 'Round', 'Upper', 'Lower'],
   right: ['Stem', 'Round', 'Bowl', 'Upper', 'Lower', 'None'],
   top: ['Bar', 'None'],
-  middle: ['Bar', 'Half', 'High', 'Low', 'None'],
+  middle: ['Bar', 'Half', 'None'],
   bottom: ['Bar', 'None'],
   mark: ['None', 'Leg', 'Tail', 'Peak', 'Vee', 'Cross', 'Arm', 'Spine', 'Offset']
 };
@@ -79,7 +79,7 @@ const build = c => {
   const strokes = [
     sides.left[c.left], sides.right[c.right],
     top === 'Bar' && [[l0, 0], [rTop, 0]],
-    { Bar: [[0, 3], [rMid, 3]], Half: [[0, 3], [2, 3]], High: [[0, 2], [4, 2]], Low: [[0, 4], [4, 4]] }[c.middle],
+    { Bar: [[0, 3], [rMid, 3]], Half: [[0, 3], [2, 3]] }[c.middle],
     bottom === 'Bar' && [[l0, 6], [rBot, 6]],
     marks[c.mark]
   ].filter(Boolean);
