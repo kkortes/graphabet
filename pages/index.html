@@ -3,8 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Rewrite</title>
+    <title>Graphabet</title>
     <meta name="description" content="A love letter to rewriting, graph grammars and wave function collapse, told with an alphabet of rotated rectangles." />
+    <link rel="icon" href="data:," />
     <link rel="stylesheet" href="/node_modules/@ape-egg/vibe/vibe.css" />
     <link rel="stylesheet" href="/node_modules/@ape-egg/codie/codie.css" />
     <link rel="stylesheet" href="/css/site.css" />
@@ -12,15 +13,17 @@
     <script type="module">
       import vibe from "/node_modules/@ape-egg/vibe/index.js";
       import code from "/js/code.js";
+      import favicon from "/js/favicon.js";
 
       window.$ = vibe({ white: true });
+      favicon();
       $.on("ready", code);
     </script>
   </head>
 
   <body stylecheat dark vibe-fouc>
     <carousel>
-      <slides y data-hmr>
+      <slides y scrollbar>
         <slide><component src="/components/Grid.html"></component></slide>
         <slide><component src="/components/Message.html"></component></slide>
         <slide><component src="/components/Alphabet.html"></component></slide>

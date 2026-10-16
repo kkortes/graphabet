@@ -85,7 +85,7 @@ slide-text {
   line-height: 1.65;
 }
 
-slide-text h2 {
+slide h2 {
   color: var(--primary-text);
 }
 
@@ -131,10 +131,25 @@ slide-wide img[big] {
   height: 240px;
 }
 
-slide-wide codie {
-  flex: none;
+slide-wide:has(codie) {
   width: max-content;
   max-width: 100%;
+}
+
+slide-wide codie {
+  flex: 0 1 max-content;
+  min-width: 0;
+}
+
+slide-wide card:has(img[big]) {
+  flex: none;
+  width: calc(var(--unit) * 78);
+}
+
+@media (width <= 768px) {
+  slide-wide card:has(img[big]) {
+    width: auto;
+  }
 }
 
 legend-item,
