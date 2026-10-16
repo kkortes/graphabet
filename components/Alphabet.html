@@ -1,6 +1,6 @@
 <script type="module">
   import component from '@ape-egg/vibe/component';
-  import { alphabet, colors, glyphs, overlapping } from '/js/draw.js';
+  import { alphabet, colors, glyphs, overlapping, symmetry } from '/js/draw.js';
   import { capital } from '/js/generator.js';
 
   const rects = glyphs.flatMap(g => g.pieces).length;
@@ -9,6 +9,8 @@
     totals: `${rects} rectangles · ${glyphs.flatMap(g => g.circles).length} circles`,
     check: overlapping.length ? `Overlap in ${overlapping.join(', ')}` : 'A-Z | Latin alphabet',
     image: alphabet,
+    mirrored: symmetry,
+    symmetric: false,
     legend: Object.keys(colors).map(k => ({ name: capital(k), k }))
   });
 </script>
@@ -22,10 +24,11 @@
       <badge bg-green text-green>@[this.check]</badge>
     </crow>
   </crow>
-  <alphabet-sheet role="img" aria-label="A to Z built from rotated rectangles joined by circles">@[$.unsafe(this.image)]</alphabet-sheet>
+  <alphabet-sheet role="img" aria-label="A to Z built from rotated rectangles joined by circles">@[$.unsafe(this.symmetric ? this.mirrored : this.image)]</alphabet-sheet>
   <crow g-4 wrap left w-full>
     <!-- each this.legend as item -->
     <legend-item style="--k: var(--piece-@[item.k])">@[item.name]</legend-item>
     <!-- /each -->
+    <button sm ml-auto primary="@[this.symmetric]" secondary="@[!this.symmetric]" aria-pressed="@[this.symmetric]" onclick="this.symmetric = !this.symmetric">Perfect symmetry</button>
   </crow>
 </slide-wide>

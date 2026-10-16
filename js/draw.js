@@ -21,33 +21,40 @@ export const svg = (box, body) => `data:image/svg+xml,${encodeURIComponent(`<svg
 export const art = (box, body) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${box}">${body}</svg>`;
 
 export const glyphs = Object.entries(letters).map(([c, strokes]) => ({ c, ...shapes(segs(strokes)) }));
-// A–Z sits in two rows of 13, seven units apart across and nine down
-const [columns, rows, pitch] = [13, 2, [7, 9]];
-const at = i => [(i % columns) * pitch[0] + 1, Math.floor(i / columns) * pitch[1] + 1];
-// A letter's drawn bounds: its rectangles' corners and its circles' edges, placed where the sheet puts it
-const bounds = (g, [ox, oy]) => {
+// A–Z sits in two rows of 13. A sheet folds each letter: fold 1 is the letter itself, fold 2 adds its mirror beside it
+// and that pair's mirror below, so a letter becomes a figure 4 × fold units wide and 6 × fold tall, set three apart
+const [columns, rows] = [13, 2];
+// A letter's drawn bounds: its rectangles' corners and its circles' edges
+const bounds = g => {
   const pts = [...g.pieces.flatMap(p => p.c), ...g.circles.flatMap(({ at: [x, y] }) => [[x - H, y - H], [x + H, y + H]])];
-  const [xs, ys] = [pts.map(p => p[0] + ox), pts.map(p => p[1] + oy)];
+  const [xs, ys] = [pts.map(p => p[0]), pts.map(p => p[1])];
   return { x: [Math.min(...xs), Math.max(...xs)], y: [Math.min(...ys), Math.max(...ys)] };
 };
 // The rulers run the whole slide through both rows and every column, so they come from the box the letters are
-// drawn in, the drawn bounds most letters share, stepped by the column and row pitch. No single letter moves a
+// drawn in, the drawn bounds most letters share, grown by the fold and stepped by the pitch. No single letter moves a
 // line: I sits inside its column's lines and Q's tail crosses its column's right one
-const cell = Object.values(Object.groupBy(glyphs.map(g => bounds(g, [0, 0])), b => JSON.stringify(b, (k, v) => typeof v === 'number' ? +v.toFixed(6) : v))).sort((a, b) => b.length - a.length)[0][0];
-export const rulers = {
-  x: Array.from({ length: columns }, (_, c) => at(c)[0]).flatMap(ox => cell.x.map(x => x + ox)),
-  y: Array.from({ length: rows }, (_, r) => at(r * columns)[1]).flatMap(oy => cell.y.map(y => y + oy))
-};
+const cell = Object.values(Object.groupBy(glyphs.map(bounds), b => JSON.stringify(b, (k, v) => typeof v === 'number' ? +v.toFixed(6) : v))).sort((a, b) => b.length - a.length)[0][0];
 // Inline, so the rulers can run past the sheet to the slide's edges in the letters' own coordinates
 const rule = (x1, y1, x2, y2) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#888" stroke-opacity="0.3" vector-effect="non-scaling-stroke"/>`;
-const rules = [...rulers.x.map(x => rule(x, -1000, x, 1000)), ...rulers.y.map(y => rule(-1000, y, 1000, y))].join('');
+const sheet = fold => {
+  const [w, h] = [4 * fold, 6 * fold], pitch = [w + 3, h + 3];
+  const at = i => [(i % columns) * pitch[0] + 1, Math.floor(i / columns) * pitch[1] + 1];
+  const xs = Array.from({ length: columns }, (_, c) => at(c)[0]).flatMap(ox => [cell.x[0] + ox, cell.x[1] + (w - 4) + ox]);
+  const ys = Array.from({ length: rows }, (_, r) => at(r * columns)[1]).flatMap(oy => [cell.y[0] + oy, cell.y[1] + (h - 6) + oy]);
+  // The mirrors share an edge with the letter: x → w − x beside it, y → h − y below
+  const figure = (g, [ox, oy]) => fold === 1 ? draw(g, {}, [ox, oy]) : [[1, 1], [-1, 1], [1, -1], [-1, -1]]
+    .map(([sx, sy]) => `<g transform="translate(${sx < 0 ? ox + w : ox} ${sy < 0 ? oy + h : oy}) scale(${sx} ${sy})">${draw(g)}</g>`).join('');
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${columns * pitch[0]} ${rows * pitch[1]}" overflow="visible">${[
+    ...xs.map(x => rule(x, -1000, x, 1000)),
+    ...ys.map(y => rule(-1000, y, 1000, y)),
+    ...glyphs.map((g, i) => `<g figure>${figure(g, at(i))}</g>`)
+  ].join('')}</svg>`;
+};
 // A word set in the letters, six units apart, the letters' four-unit box plus a gap of two
 export const word = (text, paint) => art(`-0.2 -0.2 ${(text.length - 1) * 6 + 4.4} 6.4`, [...text].map((c, i) => draw(glyphs.find(g => g.c === c), { paint }, [i * 6, 0])).join(''));
 
-export const alphabet = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 91 18" overflow="visible">${[
-  rules,
-  ...glyphs.map((g, i) => `<g>${draw(g, {}, at(i))}</g>`)
-].join('')}</svg>`;
+export const alphabet = sheet(1);
+export const symmetry = sheet(2);
 
 // The building blocks at the scale the letters use: one unit-long flat piece, its first triangle and an end circle
 const unit = shapes([[[0, 0], [1, 0]]]);
