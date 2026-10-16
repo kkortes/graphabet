@@ -1105,8 +1105,8 @@ icon.logo-stylecheat {
 .stylecheat,
 [stylecheat] {
 /* ---- A.css ---- */
-.a:is(.primary, .secondary, [primary], [secondary]),
-a:is(.primary, .secondary, [primary], [secondary]) {
+.a:not(.button):is(.primary, .secondary, [primary], [secondary]),
+a:not(.button):is(.primary, .secondary, [primary], [secondary]) {
   transition: all 100ms ease-in-out;
   text-decoration: none;
 

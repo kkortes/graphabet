@@ -1,5 +1,19 @@
 @import url('/css/stylecheat.css');
 
+@font-face {
+  font-family: Graphabet;
+  src: url('/font/Graphabet.woff2') format('woff2');
+  font-display: swap;
+}
+
+slide h2,
+slide-intro p {
+  font-family: Graphabet, var(--font-ui);
+  font-weight: normal;
+  letter-spacing: normal;
+  text-transform: uppercase;
+}
+
 html,
 body {
   height: 100%;
