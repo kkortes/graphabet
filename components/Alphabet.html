@@ -7,7 +7,7 @@
 
   component({
     totals: `${rects} rectangles · ${rects * 2} triangles · ${glyphs.flatMap(g => g.circles).length} circles`,
-    check: overlapping.length ? `Overlap in ${overlapping.join(', ')}` : 'A-Z',
+    check: overlapping.length ? `Overlap in ${overlapping.join(', ')}` : 'A-Z | Latin alphabet',
     image: alphabet,
     legend: Object.entries(colors).map(([k, color]) => ({ name: capital(k), color }))
   });
