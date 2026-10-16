@@ -201,6 +201,16 @@ card[glyph] {
   aspect-ratio: 5 / 6;
 }
 
+card[glyph],
+card[glyph] badge {
+  min-width: 0;
+}
+
+card[glyph] badge {
+  white-space: normal;
+  text-align: center;
+}
+
 slide-wide glyph-art[big] {
   width: 200px;
   height: 240px;
