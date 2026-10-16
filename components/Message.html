@@ -8,15 +8,14 @@
 <slide-text>
   <h2>Why this exists</h2>
   <p>
-    I love graph rewriting and procedural generation. Write down a few rules that swap one thing for another, apply
-    them over and over, and shapes turn up that nobody drew.
+    I love graph rewriting and procedural generation: write a few rules that swap one thing for another, apply them over
+    and over, and shapes turn up that nobody drew.
   </p>
   <p>
-    What pulls me in isn't really symmetry. It's reduction to primitives: a tiny set of atoms and strict rules that
-    build everything else, usually called <code>compositionality</code> or a <code>minimal generating set</code>.
-    Psychology calls a mind that works this way systemizing, and in games it's the systems-design instinct. It's how I
-    think, and this page is built the same way: one triangle, two of them make a rectangle, and that rectangle, turned,
-    draws every line of every letter.
+    What pulls me in isn't symmetry but reduction to primitives: a tiny set of atoms and strict rules that build
+    everything else, known as <code>compositionality</code> or a <code>minimal generating set</code>. Psychology calls
+    that kind of mind systemizing; in games, it's the systems-design instinct. This page works the same way: one
+    triangle, two make a rectangle, and that rectangle, turned, draws every line of every letter.
   </p>
   <crow g-3 w-full stretch wrap>
     <!-- each this.blocks as block -->
@@ -29,18 +28,17 @@
   </crow>
   <p>
     <a href="https://shaggydev.com/2022/11/20/graph-rewriting/" target="_blank" rel="noopener" primary>Graph rewriting</a>
-    means finding one piece of a graph and swapping in another. John Pfaltz and Azriel Rosenfeld were among the first to
-    do it, in 1969, on labelled graphs they called webs, and the rule sets that do it became
+    swaps one piece of a graph for another. John Pfaltz and Azriel Rosenfeld were among the first to do it, in 1969, on
+    labelled graphs they called webs, and its rule sets became
     <a href="https://www.ijcai.org/Proceedings/69/Papers/054.pdf" target="_blank" rel="noopener" primary>graph grammars</a>.
-    In 1973 Hartmut Ehrig, Michael Pfender and Hans-Jürgen Schneider gave graph rewriting the algebraic form much of the
-    field still builds on.
-    <a href="https://github.com/mxgmn/WaveFunctionCollapse" target="_blank" rel="noopener" primary>Wave function collapse</a>
-    by Maxim Gumin learns which pieces may sit next to each other from a single example, then fills a grid with output
-    that only ever follows what it learned.
+    In 1973 Hartmut Ehrig, Michael Pfender and Hans-Jürgen Schneider gave it the algebraic form much of the field still
+    builds on. Maxim Gumin's
+    <a href="https://github.com/mxgmn/WaveFunctionCollapse" target="_blank" rel="noopener" primary>wave function collapse</a>
+    learns which pieces may sit side by side from a single example, then fills a grid that only follows what it learned.
   </p>
   <p>
-    This site borrows from all three. A–Z is the example: every line a new letter draws has to sit somewhere A–Z
-    already uses. A grammar rewrites a glyph into parts and its parts into pieces, joint rules settle where the parts
-    meet, and anything that breaks a rule is thrown away and drawn again.
+    This site borrows from all three. A–Z is the example: every line a new letter draws must sit where A–Z already has
+    one. A grammar rewrites a glyph into parts and parts into pieces, joint rules settle where parts meet, and anything
+    that breaks a rule is drawn again.
   </p>
 </slide-text>
