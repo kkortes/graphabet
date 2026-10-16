@@ -1,0 +1,33 @@
+<script type="module">
+  import component from '@ape-egg/vibe/component';
+
+  const files = [
+    { name: 'Download font', format: 'TTF', href: '/font/Graphabet.ttf', primary: true },
+    { name: 'WOFF2 for the web', format: 'WOFF2', href: '/font/Graphabet.woff2' }
+  ];
+  const id = component({ files });
+
+  // Each badge reads its file's real size, so it never drifts from what the button hands over
+  Promise.all(files.map(f => fetch(f.href).then(r => r.blob()))).then(blobs =>
+    ($[id].files = files.map((f, i) => ({ ...f, size: `${(blobs[i].size / 1000).toFixed(2)} kB` })))
+  );
+</script>
+
+<slide-text>
+  <h2>Take the letters with you</h2>
+  <p>
+    Graphabet is also a font: the same 26 letters, each one merged into a single clean outline. It holds the capitals
+    A–Z and a space and nothing more, so type in caps. Install the TTF on your computer, or load the WOFF2 on a web page
+    with <code>@font-face</code>.
+  </p>
+  <crow g-4 wrap left>
+    <!-- each this.files as file -->
+    <crow g-2>
+      <a class="button" primary="@[file.primary]" secondary="@[!file.primary]" href="@[file.href]" download>@[file.name]</a>
+      <!-- if file.size -->
+      <badge secondary>@[file.format] · @[file.size]</badge>
+      <!-- /if -->
+    </crow>
+    <!-- /each -->
+  </crow>
+</slide-text>
