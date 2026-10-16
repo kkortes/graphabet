@@ -286,6 +286,56 @@ carousel[white] legend-item {
   color: #fff;
 }
 
+lattice,
+lattice > * {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+lattice-tiles {
+  opacity: 0.06;
+  transition: filter 400ms ease-in-out;
+}
+
+carousel[white] lattice-tiles {
+  filter: brightness(0) invert(1);
+}
+
+lattice-signal use {
+  animation: lit 1600ms var(--t) both;
+}
+
+lattice-signal line {
+  stroke: #fff;
+  stroke-width: 0.12;
+  stroke-linecap: round;
+  animation: spark 500ms var(--t) both;
+}
+
+@keyframes lit {
+  from,
+  to {
+    opacity: 0;
+  }
+
+  4%,
+  30% {
+    opacity: calc(var(--a) * 0.35);
+  }
+}
+
+@keyframes spark {
+  from,
+  to {
+    opacity: 0;
+  }
+
+  3% {
+    opacity: var(--a);
+  }
+}
+
 color-toggle {
   position: fixed;
   top: calc(var(--unit) * 4);
