@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "\"$(git rev-parse --path-format=absolute --git-common-dir)/../../dev.sh\" 'bunx --bun vite --port $PORT --strictPort'",
+    "dev": "\"$(git rev-parse --path-format=absolute --git-common-dir)/../../dev.sh\" 'bunx vite --port $PORT --strictPort'",
     "build": "vibe compile"
   },
   "dependencies": {
