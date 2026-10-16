@@ -36,7 +36,7 @@
 <slide-wide>
   <crow justify-between w-full wrap g-2>
     <h2>New letters</h2>
-    <crow g-2>
+    <crow g-2 wrap left>
       <button secondary sm onclick="this.toggle()">@[this.seams ? 'Hide triangles' : 'Show triangles']</button>
       <button secondary sm onclick="this.prev()">Previous seed</button>
       <button primary sm onclick="this.next()">Next seed</button>
@@ -47,14 +47,12 @@
     <codie dark></codie>
     <card f-1 vertical left up g-2>
       <crow justify-between w-full><h6>Glyph @[this.pick + 1]</h6><badge secondary>@[this.verdict]</badge></crow>
-      <crow g-3 w-full left up sm:vertical>
-        <img big src="@[this.big]" alt="The chosen glyph over every location A–Z uses" />
-        <ol>
-          <!-- each this.steps as step -->
-          <li><step>@[step]</step></li>
-          <!-- /each -->
-        </ol>
-      </crow>
+      <img big src="@[this.big]" alt="The chosen glyph over every location A–Z uses" />
+      <ol>
+        <!-- each this.steps as step -->
+        <li><step>@[step]</step></li>
+        <!-- /each -->
+      </ol>
     </card>
   </crow>
 
