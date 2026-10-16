@@ -7,8 +7,8 @@ export const neutral = '#c9ccd3';
 const tri = (t, color, seams, [ox, oy]) => `<polygon points="${t.map(([x, y]) => `${(x + ox).toFixed(3)},${(y + oy).toFixed(3)}`).join(' ')}" fill="${color}" stroke="${seams ? '#111' : color}" stroke-width="${seams ? 0.012 : 0.004}" stroke-linejoin="round"/>`;
 const dot = ([x, y], color, [ox, oy]) => `<circle cx="${x + ox}" cy="${y + oy}" r="${H}" fill="${color}"/>`;
 
-export const draw = (glyph, { seams, plain } = {}, at = [0, 0]) => [...glyph.pieces, ...glyph.joints]
-  .map(s => [s, plain ? neutral : colors[s.k]])
+export const draw = (glyph, { seams, paint } = {}, at = [0, 0]) => [...glyph.pieces, ...glyph.joints]
+  .map(s => [s, paint || colors[s.k]])
   .map(([s, color]) => s.c ? halves(s.c).map(t => tri(t, color, seams, at)).join('') : dot(s.at, color, at))
   .join('');
 

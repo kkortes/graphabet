@@ -31,7 +31,7 @@ export const grammar = [
   '## Rejection rules',
   '- Piece not on an A–Z location → redraw',
   '- Glyph falls apart → redraw',
-  '- Any two pieces or joints overlap → redraw'
+  '- Two pieces overlap, or a circle covers a piece that doesn\'t end at it → redraw'
 ].join('\n');
 
 const rng = s => () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296;

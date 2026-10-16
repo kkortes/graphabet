@@ -14,6 +14,6 @@ vibe + vibe-compiler + stylecheat (hybrid build, vendored as `css/stylecheat.css
 ## Modules
 
 - [js/letters.js](js/letters.js) — A–Z as strokes on a 4×6 grid, split into unit segments; `every` / `allowed` are the locations A–Z uses, `known` maps a glyph's signature back to its letter.
-- [js/pieces.js](js/pieces.js) — each segment becomes one rectangle of two triangles (upright, flat, 45° corner, 2:3 diagonal), thickness `2H`, `GAP` short of each end. Joints are the grid points two or more segments end on, drawn as circles of diameter `2H`. `clash` runs separating axes over rectangles and circles alike.
-- [js/draw.js](js/draw.js) — SVG data URLs: glyphs, the ghost grid, the A–Z sheet, and `plain` for the one-colour view.
+- [js/pieces.js](js/pieces.js) — each segment becomes one rectangle of two triangles (upright, flat, 45° corner, 2:3 diagonal), thickness `2H`. Joints are the grid points two or more segments end on, drawn as circles of diameter `2H` on top of the pieces. A free end stops `GAP` short; an end at a joint runs in until it would touch its neighbour there (`H / tan(θ / 2)`), so straight runs meet at the centre. `clash` runs separating axes over rectangles and circles alike; a piece may run under the circle at its own ends, every other pair stays apart.
+- [js/draw.js](js/draw.js) — SVG data URLs: glyphs, the ghost grid, the A–Z sheet, and `paint` for a one-colour view (neutral on the alphabet, white by default on New letters).
 - [js/generator.js](js/generator.js) — part rules (slots), joint rules (`build`), rejection rules (off the alphabet, falls apart, overlaps) and the seeded `generate`.

@@ -4,14 +4,15 @@
   import { capital, generate } from '/js/generator.js';
 
   const count = (shapes, k) => shapes.filter(p => p.k === k).length;
-  const view = (seed, seams, pick) => {
+  const view = (seed, seams, pick, colored) => {
     const { glyphs, tally } = generate(seed);
     const g = glyphs[pick];
+    const look = { seams, paint: !colored && '#fff' };
     return {
-      seed, seams, pick, ...tally,
+      seed, seams, pick, colored, ...tally,
       fresh: glyphs.filter(x => !x.match).length,
-      glyphs: glyphs.map(x => ({ image: svg('-0.5 -0.5 6 7', draw(x, { seams })), label: x.match ? `Same as ${x.match}` : 'New' })),
-      big: svg('-0.5 -0.5 6 7', ghost + draw(g, { seams })),
+      glyphs: glyphs.map(x => ({ image: svg('-0.5 -0.5 6 7', draw(x, look)), label: x.match ? `Same as ${x.match}` : 'New' })),
+      big: svg('-0.5 -0.5 6 7', ghost + draw(g, look)),
       verdict: g.match ? `Same as ${g.match}` : 'New letter',
       steps: [
         'Glyph',
@@ -25,11 +26,12 @@
   };
 
   component({
-    ...view(1, false, 0),
-    show(i) { Object.assign(this, view(this.seed, this.seams, i)); },
-    toggle() { Object.assign(this, view(this.seed, !this.seams, this.pick)); },
-    next() { Object.assign(this, view(this.seed + 1, this.seams, 0)); },
-    prev() { Object.assign(this, view(Math.max(1, this.seed - 1), this.seams, 0)); }
+    ...view(1, false, 0, false),
+    show(i) { Object.assign(this, view(this.seed, this.seams, i, this.colored)); },
+    toggleSeams() { Object.assign(this, view(this.seed, !this.seams, this.pick, this.colored)); },
+    toggleColors() { Object.assign(this, view(this.seed, this.seams, this.pick, !this.colored)); },
+    next() { Object.assign(this, view(this.seed + 1, this.seams, 0, this.colored)); },
+    prev() { Object.assign(this, view(Math.max(1, this.seed - 1), this.seams, 0, this.colored)); }
   });
 </script>
 
@@ -37,7 +39,8 @@
   <crow justify-between w-full wrap g-2>
     <h2>New letters</h2>
     <crow g-2 wrap left>
-      <button secondary sm onclick="this.toggle()">@[this.seams ? 'Hide triangles' : 'Show triangles']</button>
+      <button secondary sm onclick="this.toggleColors()">Toggle colors</button>
+      <button secondary sm onclick="this.toggleSeams()">@[this.seams ? 'Hide triangles' : 'Show triangles']</button>
       <button secondary sm onclick="this.prev()">Previous seed</button>
       <button primary sm onclick="this.next()">Next seed</button>
     </crow>

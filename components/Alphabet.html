@@ -5,7 +5,7 @@
 
   const view = plain => ({
     plain,
-    image: alphabet({ plain }),
+    image: alphabet({ paint: plain && neutral }),
     legend: Object.entries(colors).map(([k, color]) => ({ name: capital(k), color: plain ? neutral : color }))
   });
   const rects = glyphs.flatMap(g => g.pieces).length;
