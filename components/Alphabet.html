@@ -1,20 +1,15 @@
 <script type="module">
   import component from '@ape-egg/vibe/component';
-  import { alphabet, colors, neutral, glyphs, overlapping } from '/js/draw.js';
+  import { alphabet, colors, glyphs, overlapping } from '/js/draw.js';
   import { capital } from '/js/generator.js';
 
-  const view = plain => ({
-    plain,
-    image: alphabet({ paint: plain && neutral }),
-    legend: Object.entries(colors).map(([k, color]) => ({ name: capital(k), color: plain ? neutral : color }))
-  });
   const rects = glyphs.flatMap(g => g.pieces).length;
 
   component({
     totals: `${rects} rectangles · ${rects * 2} triangles · ${glyphs.flatMap(g => g.joints).length} circles`,
     check: overlapping.length ? `Overlap in ${overlapping.join(', ')}` : 'A–Z overlap-free',
-    ...view(false),
-    toggle() { Object.assign(this, view(!this.plain)); }
+    image: alphabet,
+    legend: Object.entries(colors).map(([k, color]) => ({ name: capital(k), color }))
   });
 </script>
 
@@ -27,12 +22,9 @@
     </crow>
   </crow>
   <img src="@[this.image]" alt="A to Z built from rotated rectangles joined by circles" />
-  <crow justify-between w-full wrap g-3>
-    <crow g-4 wrap>
-      <!-- each this.legend as item -->
-      <legend-item style="color: @[item.color]">@[item.name]</legend-item>
-      <!-- /each -->
-    </crow>
-    <button secondary sm onclick="this.toggle()">@[this.plain ? 'Show colours' : 'Hide colours']</button>
+  <crow g-4 wrap left w-full>
+    <!-- each this.legend as item -->
+    <legend-item style="color: @[item.color]">@[item.name]</legend-item>
+    <!-- /each -->
   </crow>
 </slide-wide>

@@ -4,12 +4,12 @@
   import { capital, generate } from '/js/generator.js';
 
   const count = (shapes, k) => shapes.filter(p => p.k === k).length;
-  const view = (seed, seams, pick, colored) => {
+  const view = (seed, seams, pick, white) => {
     const { glyphs, tally } = generate(seed);
     const g = glyphs[pick];
-    const look = { seams, paint: !colored && '#fff' };
+    const look = { seams, paint: white && '#fff' };
     return {
-      seed, seams, pick, colored, ...tally,
+      seed, seams, pick, white, ...tally,
       fresh: glyphs.filter(x => !x.match).length,
       glyphs: glyphs.map(x => ({ image: svg('-0.5 -0.5 6 7', draw(x, look)), label: x.match ? `Same as ${x.match}` : 'New' })),
       big: svg('-0.5 -0.5 6 7', ghost + draw(g, look)),
@@ -27,11 +27,11 @@
 
   component({
     ...view(1, false, 0, false),
-    show(i) { Object.assign(this, view(this.seed, this.seams, i, this.colored)); },
-    toggleSeams() { Object.assign(this, view(this.seed, !this.seams, this.pick, this.colored)); },
-    toggleColors() { Object.assign(this, view(this.seed, this.seams, this.pick, !this.colored)); },
-    next() { Object.assign(this, view(this.seed + 1, this.seams, 0, this.colored)); },
-    prev() { Object.assign(this, view(Math.max(1, this.seed - 1), this.seams, 0, this.colored)); }
+    show(i) { Object.assign(this, view(this.seed, this.seams, i, this.white)); },
+    toggleSeams() { Object.assign(this, view(this.seed, !this.seams, this.pick, this.white)); },
+    toggleColors() { Object.assign(this, view(this.seed, this.seams, this.pick, !this.white)); },
+    next() { Object.assign(this, view(this.seed + 1, this.seams, 0, this.white)); },
+    prev() { Object.assign(this, view(Math.max(1, this.seed - 1), this.seams, 0, this.white)); }
   });
 </script>
 
