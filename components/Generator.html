@@ -10,7 +10,7 @@
     return {
       seed, seams, pick, ...tally,
       fresh: glyphs.filter(x => !x.match).length,
-      glyphs: glyphs.map(x => ({ art: art('-0.5 -0.5 6 7', draw(x, { seams })), label: x.match ? `Same as ${x.match}` : 'New' })),
+      glyphs: glyphs.map(x => ({ art: art('-1.1 -0.5 6.2 7', draw(x, { seams })), label: x.match && `Same as ${x.match}` })),
       big: art('-0.5 -0.5 6 7', ghost + draw(g, { seams })),
       verdict: g.match ? `Same as ${g.match}` : 'New letter',
       steps: [
@@ -26,7 +26,6 @@
 
   component({
     ...view(1, false, 0),
-    show(i) { Object.assign(this, view(this.seed, this.seams, i)); },
     toggleSeams() { Object.assign(this, view(this.seed, !this.seams, this.pick)); },
     next() { Object.assign(this, view(this.seed + 1, this.seams, 0)); },
     prev() { Object.assign(this, view(Math.max(1, this.seed - 1), this.seams, 0)); }
@@ -58,10 +57,11 @@
 
   <crow g-2 w-full stretch wrap>
     <!-- each this.glyphs as glyph, i -->
-    <card f-1 vertical g-2 p-2 picked="@[this.pick === i]">
+    <card glyph f-1 vertical g-2 p-2 picked="@[this.pick === i]">
       <glyph-art role="img" aria-label="Glyph @[i + 1]">@[$.unsafe(glyph.art)]</glyph-art>
+      <!-- if glyph.label -->
       <badge bg-hollow>@[glyph.label]</badge>
-      <button tertiary sm onclick="this.show(@[i])">Derive</button>
+      <!-- /if -->
     </card>
     <!-- /each -->
   </crow>
