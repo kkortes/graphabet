@@ -13,9 +13,64 @@ slide {
   box-sizing: border-box;
 }
 
+slide-grid {
+  container-type: size;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  width: 100%;
+  padding: calc(var(--unit) * 18) calc(var(--unit) * 10);
+  box-sizing: border-box;
+}
+
+slide-grid stack {
+  width: min(100cqw, 100cqh * 6 / 7);
+  aspect-ratio: 6 / 7;
+}
+
 slide-grid img {
-  height: 80dvh;
-  max-width: 100%;
+  width: 100%;
+  height: 100%;
+}
+
+slide-grid img[flash] {
+  animation: flash 900ms ease-out forwards;
+}
+
+slide-grid card[splash] {
+  place-self: start;
+  width: max-content;
+  margin: calc(100% * 0.5 / 6) 0 0 calc(100% * 4.5 / 6);
+  translate: -20% -80%;
+  rotate: 12deg;
+  animation: splash 600ms ease-in-out infinite alternate;
+}
+
+@keyframes flash {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes splash {
+  to {
+    scale: 1.08;
+  }
+}
+
+@media (hover: none) {
+  slide-grid {
+    padding-inline: 0;
+  }
+
+  slide-grid card[splash] {
+    display: none;
+  }
 }
 
 slide-text,
@@ -47,6 +102,20 @@ slide-text card img {
 slide-wide img {
   width: 100%;
   object-fit: contain;
+}
+
+slide:has(alphabet-sheet) {
+  overflow: clip;
+}
+
+slide-wide:has(alphabet-sheet) > crow {
+  position: relative;
+}
+
+alphabet-sheet svg {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 slide-wide card img {

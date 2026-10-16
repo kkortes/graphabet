@@ -1,10 +1,29 @@
 <script type="module">
   import component from '@ape-egg/vibe/component';
-  import { ghost, svg } from '/js/draw.js';
+  import { draw, ghost, glyphs, looks, svg } from '/js/draw.js';
 
-  component({ grid: svg('-0.5 -0.5 6 7', ghost) });
+  const id = component({
+    grid: svg('-0.5 -0.5 6 7', ghost),
+    letters: Object.fromEntries(glyphs.map(g => [g.c, looks('-0.5 -0.5 6 7', look => draw(g, look))])),
+    flashes: []
+  });
+
+  // One flash at a time, keyed by keystroke, so every key press mounts a fresh element and replays the fade
+  let count = 0;
+  const type = e => {
+    if (e.ctrlKey || e.metaKey || e.altKey || e.repeat || !/^[a-z]$/i.test(e.key) || e.target.isContentEditable || e.target.closest('input, textarea, select')) return;
+    $[id].flashes = [{ c: e.key.toUpperCase(), n: count++ }];
+  };
+  document.addEventListener('keydown', type);
+  $.on('unmount', () => document.removeEventListener('keydown', type));
 </script>
 
 <slide-grid>
-  <img src="@[this.grid]" alt="Every place a line of A–Z can sit" />
+  <stack>
+    <img src="@[this.grid]" alt="Every place a line of A–Z can sit" />
+    <!-- each this.flashes as flash (flash.n) -->
+    <img flash src="@[white ? this.letters[flash.c].white : this.letters[flash.c].colored]" alt="@[flash.c]" />
+    <!-- /each -->
+    <card splash bg-yellow text-yellow p-2><b>Type something!</b></card>
+  </stack>
 </slide-grid>

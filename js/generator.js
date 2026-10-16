@@ -21,6 +21,7 @@ export const grammar = [
   '## Part rules',
   `Glyph → ${Object.keys(slots).map(capital).join(' ')}`,
   ...Object.entries(slots).map(([s, o]) => `${capital(s)} → ${o.join(' | ')}`),
+  'Option that leaves the top or bottom untouched → not chosen',
   '',
   '## Joint rules',
   '- Round left + Bar → Bar starts one step in',
@@ -40,7 +41,17 @@ export const grammar = [
 ].join('\n');
 
 const rng = s => () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296;
-const choose = r => Object.fromEntries(Object.entries(slots).map(([s, o]) => [s, o[Math.floor(r() * o.length)]]));
+// Which edges of the box an option's strokes touch: the top (y 0) and the bottom (y 6)
+const strokesOf = { ...sides, top: { Bar: [[0, 0], [4, 0]] }, bottom: { Bar: [[0, 6], [4, 6]] }, mark: marks };
+const reach = (slot, option) => new Set((strokesOf[slot]?.[option] ?? []).flatMap(([, y]) => [y === 0 && 'top', y === 6 && 'bottom']).filter(Boolean));
+// Slots are chosen in order, each keeping only the options that still let the letter touch the top and the
+// bottom, given what is chosen so far and what the slots after it could still reach
+const choose = r => Object.entries(slots).reduce((c, [s, o], i, all) => {
+  const later = new Set(all.slice(i + 1).flatMap(([t, os]) => os.flatMap(x => [...reach(t, x)])));
+  const sofar = Object.entries(c).flatMap(([t, x]) => [...reach(t, x)]);
+  const open = o.filter(x => ['top', 'bottom'].every(e => sofar.includes(e) || reach(s, x).has(e) || later.has(e)));
+  return { ...c, [s]: open[Math.floor(r() * open.length)] };
+}, {});
 
 const build = c => {
   const fired = [];

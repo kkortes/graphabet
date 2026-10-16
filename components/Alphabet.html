@@ -7,7 +7,7 @@
 
   component({
     totals: `${rects} rectangles · ${rects * 2} triangles · ${glyphs.flatMap(g => g.circles).length} circles`,
-    check: overlapping.length ? `Overlap in ${overlapping.join(', ')}` : 'A–Z overlap-free',
+    check: overlapping.length ? `Overlap in ${overlapping.join(', ')}` : 'A-Z',
     image: alphabet,
     legend: Object.entries(colors).map(([k, color]) => ({ name: capital(k), color }))
   });
@@ -21,7 +21,7 @@
       <badge bg-green text-green>@[this.check]</badge>
     </crow>
   </crow>
-  <img src="@[white ? this.image.white : this.image.colored]" alt="A to Z built from rotated rectangles joined by circles" />
+  <alphabet-sheet role="img" aria-label="A to Z built from rotated rectangles joined by circles">@[$.unsafe(white ? this.image.white : this.image.colored)]</alphabet-sheet>
   <crow g-4 wrap left w-full>
     <!-- each this.legend as item -->
     <legend-item style="color: @[white ? '#fff' : item.color]">@[item.name]</legend-item>
